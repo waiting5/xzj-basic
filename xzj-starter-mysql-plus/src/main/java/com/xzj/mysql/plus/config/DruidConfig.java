@@ -11,8 +11,10 @@ import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,6 +38,9 @@ import java.util.Map;
 @MapperScan("com.*.**.mapper")
 public class DruidConfig {
 
+    @Value("${spring.datasource.druid.slave.enable}")
+    private boolean slaveEnable;
+
     @Bean(name = CommonConstant.MASTER)
     @ConfigurationProperties("spring.datasource.druid.master")
     public DataSource masterDataSource()
@@ -46,6 +51,7 @@ public class DruidConfig {
 
     @Bean(name = CommonConstant.SLAVE)
     @ConfigurationProperties("spring.datasource.druid.slave")
+    @ConditionalOnProperty(name = "spring.datasource.druid.slave.enable",matchIfMissing = true)
     public DataSource slaveDataSource()
     {
         DruidDataSource dataSource = DruidDataSourceBuilder.create().build();
@@ -58,7 +64,9 @@ public class DruidConfig {
     {
         Map<Object, Object> dataSourceMap = new HashMap<>(2);
         dataSourceMap.put(CommonConstant.MASTER,masterDataSource());
-        dataSourceMap.put(CommonConstant.SLAVE,slaveDataSource());
+        if(slaveEnable){
+            dataSourceMap.put(CommonConstant.SLAVE,slaveDataSource());
+        }
         //设置动态数据源
         DynamicDataSource dynamicDataSource = new DynamicDataSource();
         dynamicDataSource.setDefaultTargetDataSource(masterDataSource());
