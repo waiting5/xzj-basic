@@ -13,16 +13,19 @@ import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import javax.annotation.Resource;
 import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,9 +40,9 @@ import java.util.Map;
 @AutoConfigureBefore({DruidDataSourceAutoConfigure.class})
 @MapperScan("com.*.**.mapper")
 public class DruidConfig {
+    @Resource
+    private Environment environment;
 
-    @Value("${spring.datasource.druid.slave.enable}")
-    private boolean slaveEnable;
 
     @Bean(name = CommonConstant.MASTER)
     @ConfigurationProperties("spring.datasource.druid.master")
@@ -51,7 +54,7 @@ public class DruidConfig {
 
     @Bean(name = CommonConstant.SLAVE)
     @ConfigurationProperties("spring.datasource.druid.slave")
-    @ConditionalOnProperty(name = "spring.datasource.druid.slave.enable",matchIfMissing = true)
+    @ConditionalOnExpression(value = "environment.containsProperty('spring.datasource.druid.slave.url')")
     public DataSource slaveDataSource()
     {
         DruidDataSource dataSource = DruidDataSourceBuilder.create().build();
@@ -64,7 +67,7 @@ public class DruidConfig {
     {
         Map<Object, Object> dataSourceMap = new HashMap<>(2);
         dataSourceMap.put(CommonConstant.MASTER,masterDataSource());
-        if(slaveEnable){
+        if(environment.containsProperty("spring.datasource.druid.slave.url")){
             dataSourceMap.put(CommonConstant.SLAVE,slaveDataSource());
         }
         //设置动态数据源
