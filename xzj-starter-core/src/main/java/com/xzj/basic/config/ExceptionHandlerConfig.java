@@ -2,6 +2,7 @@ package com.xzj.basic.config;
 
 import com.xzj.basic.base.dto.AjaxResult;
 import com.xzj.basic.base.enums.BaseEnum;
+import com.xzj.basic.cache.ThreadTimeCache;
 import com.xzj.basic.exception.ErrorPageException;
 import com.xzj.basic.exception.ServiceException;
 import lombok.extern.slf4j.Slf4j;
@@ -82,6 +83,7 @@ public class ExceptionHandlerConfig {
     private Object returnResult(Exception e,AjaxResult errorResult){
         //把错误信息输入到日志中
         log.error("{}",e.getMessage(),e);
+        ThreadTimeCache.countTime(errorResult);
         return errorResult;
     }
 

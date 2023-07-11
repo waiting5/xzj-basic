@@ -48,4 +48,10 @@ public class BaseAutoConfig {
     public ExceptionHandlerConfig exceptionHandlerConfig(){
         return new ExceptionHandlerConfig();
     }
+
+    @ConditionalOnMissingBean
+    @Bean
+    public GlobResponseBodyAdvice globResponseBodyAdvice(){
+        return new GlobResponseBodyAdvice();
+    }
 }
