@@ -1,7 +1,9 @@
 package com.xzj.basic.base.dto;
 
 import com.xzj.basic.base.enums.BaseEnum;
+import com.xzj.basic.log.constants.LogConstants;
 import lombok.Data;
+import org.slf4j.MDC;
 
 /**
  * @Category com.xzj.basic.base.dto
@@ -42,8 +44,11 @@ public class AjaxResult {
      */
     private Long executionTime;
 
+    private String traceId;
+
 
     private AjaxResult() {
+        this.traceId = MDC.get(LogConstants.TRACE_ID);
     }
 
     public static AjaxResult successResult(){

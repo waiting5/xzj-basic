@@ -26,7 +26,7 @@ public class ExceptionHandlerConfig {
     @ExceptionHandler(value = ServiceException.class)
     @ResponseBody
     public Object exceptionHandler400(ServiceException e){
-        return returnResult(e, AjaxResult.failResult().putEnum(e.getErrorEnum()));
+        return returnResult(e, AjaxResult.failResult().putEnum(e.getErrorEnum()).putStatus(400));
     }
 
     /**
@@ -54,7 +54,7 @@ public class ExceptionHandlerConfig {
                 break;
         }
 
-        return returnResult(e,AjaxResult.failResult().putEnum(errorEnum));
+        return returnResult(e,AjaxResult.failResult().putEnum(errorEnum).putStatus(Integer.parseInt(e.getCode())));
     }
 
     /**
@@ -63,7 +63,7 @@ public class ExceptionHandlerConfig {
     @ExceptionHandler(value =NullPointerException.class)
     @ResponseBody
     public Object exceptionHandler500(NullPointerException e){
-        return returnResult(e,AjaxResult.failResult().putEnum(BaseEnum.INTERNAL_SERVER_ERROR));
+        return returnResult(e,AjaxResult.failResult().putEnum(BaseEnum.INTERNAL_SERVER_ERROR).putStatus(500));
     }
 
     /**
@@ -73,7 +73,7 @@ public class ExceptionHandlerConfig {
     @ResponseBody
     public Object exceptionHandler(Exception e){
         AjaxResult ajaxResult = AjaxResult.failResult().putCode(BaseEnum.UNKNOWN.getCode());
-        return returnResult(e,ajaxResult.putMsg("【" + e.getClass().getName() + "】" + e.getMessage()));
+        return returnResult(e,ajaxResult.putMsg("【" + e.getClass().getName() + "】" + e.getMessage()).putStatus(600));
     }
 
     /**

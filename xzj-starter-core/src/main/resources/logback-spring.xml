@@ -4,7 +4,7 @@
     <springProperty name="port" scope="context" source="server.port" defaultValue="0000"/>
     <springProperty name="appName" scope="context" source="spring.application.name"/>
     <springProperty scope="context" name="rootLevel" source="logging.level.root" defaultValue="info"/>
-    <property name="log.pattern" value="[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%-10.10thread] [%-5level] [%-36.36logger{36}:%-4.4line] - %msg%n" />
+    <property name="log.pattern" value="[%X{TRACE_ID}] - %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{20} - [%method,%line] - %msg%n" />
     <springProperty name="log.path" scope="context" source="logging.file.path" defaultValue="logs/" />
     <!--输出到控制台-->
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
